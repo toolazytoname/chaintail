@@ -10,15 +10,14 @@ Think `tail -f` for a chain. First implementation may be one chain only (Solana 
 
 ## Status
 
-**v0.1 runtime.** One chain (`evm-fixture`): canned logs into local SQLite, query, alert. Amounts are integer strings.
+**v0.1 runtime (Rust 1.85 + bundled rusqlite).** One chain (`evm-fixture`): canned logs into local SQLite, query, alert. Amounts are integer strings.
 
 ```bash
 cd chaintail
-PYTHONPATH=. python3 -m chaintail init --dir /tmp/chaintail-demo
-PYTHONPATH=. python3 -m chaintail follow --config fixtures/config.ok.json --fixture fixtures/events.json --db /tmp/chaintail-demo/db.sqlite
-PYTHONPATH=. python3 -m chaintail query --config fixtures/config.ok.json --db /tmp/chaintail-demo/db.sqlite --fail
-PYTHONPATH=. python3 -m chaintail alert --config fixtures/config.ok.json --db /tmp/chaintail-demo/db.sqlite --min-amount 2000000
-PYTHONPATH=. python3 -m unittest discover -s tests -v
+cargo test
+cargo run -- follow --config fixtures/config.ok.json --fixture fixtures/events.json --db /tmp/chaintail-demo.sqlite
+cargo run -- query --config fixtures/config.ok.json --db /tmp/chaintail-demo.sqlite --fail
+cargo run -- alert --config fixtures/config.ok.json --db /tmp/chaintail-demo.sqlite --min-amount 2000000
 ```
 
 ## What we will not do

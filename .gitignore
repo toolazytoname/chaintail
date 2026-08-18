@@ -1,14 +1,6 @@
-.env
-config.toml
-/data
-/logs
 /target
-node_modules
-.venv
-.DS_Store
-**/*.rs.bk
-__pycache__/
-*.pyc
+.env
 alerts.jsonl
 status.json
 *.sqlite
+.DS_Store
