@@ -27,9 +27,15 @@ enum Cmd {
         #[arg(long)]
         config: PathBuf,
         #[arg(long)]
-        fixture: PathBuf,
+        fixture: Option<PathBuf>,
+        /// Pull eth_getLogs from config.rpc_url (read-only).
+        #[arg(long)]
+        rpc: bool,
         #[arg(long)]
         db: Option<PathBuf>,
+        /// Look back this many blocks from tip (live).
+        #[arg(long, default_value_t = 200)]
+        lookback: u64,
     },
     Query {
         #[arg(long)]
@@ -110,20 +116,15 @@ fn main() -> ExitCode {
         Cmd::Follow {
             config,
             fixture,
+            rpc,
             db,
+            lookback,
         } => {
             let cfg = match load_cfg(&config) {
                 Ok(v) => v,
                 Err(c) => return c,
             };
             let db = db_path(&cfg, db);
-            let file: EventsFile = match serde_json::from_str(&std::fs::read_to_string(&fixture).unwrap_or_default()) {
-                Ok(f) => f,
-                Err(e) => {
-                    eprintln!("{e}");
-                    return ExitCode::from(1);
-                }
-            };
             let conn = match store::open(&db) {
                 Ok(c) => c,
                 Err(e) => {
@@ -131,9 +132,51 @@ fn main() -> ExitCode {
                     return ExitCode::from(1);
                 }
             };
-            match store::ingest(&conn, &file.events) {
+            let events = if rpc || fixture.is_none() {
+                let rpc_url = match cfg.get("rpc_url").and_then(|u| u.as_str()) {
+                    Some(u) => u,
+                    None => {
+                        eprintln!("follow: set rpc_url in config or pass --fixture");
+                        return ExitCode::from(2);
+                    }
+                };
+                let address = match cfg.get("address").and_then(|u| u.as_str()) {
+                    Some(a) => a,
+                    None => {
+                        eprintln!("follow: set address in config");
+                        return ExitCode::from(2);
+                    }
+                };
+                let client = chaintail::rpc::RpcClient::new(rpc_url);
+                let tip = match client.block_number() {
+                    Ok(n) => n,
+                    Err(e) => {
+                        eprintln!("{e}");
+                        return ExitCode::from(1);
+                    }
+                };
+                let from = tip.saturating_sub(lookback);
+                match client.get_logs(address, from, tip) {
+                    Ok(ev) => ev,
+                    Err(e) => {
+                        eprintln!("{e}");
+                        return ExitCode::from(1);
+                    }
+                }
+            } else {
+                let path = fixture.unwrap();
+                let file: EventsFile = match serde_json::from_str(&std::fs::read_to_string(&path).unwrap_or_default()) {
+                    Ok(f) => f,
+                    Err(e) => {
+                        eprintln!("{e}");
+                        return ExitCode::from(1);
+                    }
+                };
+                file.events
+            };
+            match store::ingest(&conn, &events) {
                 Ok(n) => {
-                    println!("{}", serde_json::json!({"ingested": n, "db": db}));
+                    println!("{}", serde_json::json!({"ingested": n, "db": db, "rows": events.len()}));
                     ExitCode::SUCCESS
                 }
                 Err(e) => {

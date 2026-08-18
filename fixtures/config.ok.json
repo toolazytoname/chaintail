@@ -1,1 +1,8 @@
-{"chain": "evm-fixture", "db": "chaintail.sqlite", "notify": {"kind": "file", "path": "alerts.jsonl"}}
+{
+  "chain": "base",
+  "db": "chaintail.sqlite",
+  "rpc_url": "https://mainnet.base.org",
+  "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+  "notify": { "kind": "file", "path": "alerts.jsonl" }
+}
+

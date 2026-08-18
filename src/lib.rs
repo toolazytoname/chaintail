@@ -1,5 +1,6 @@
 //! Local-first, read-only chain event tail.
 
+pub mod rpc;
 pub mod secrets;
 pub mod store;
 

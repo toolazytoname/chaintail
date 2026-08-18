@@ -15,9 +15,10 @@ Think `tail -f` for a chain. First implementation may be one chain only (Solana 
 ```bash
 cd chaintail
 cargo test
-cargo run -- follow --config fixtures/config.ok.json --fixture fixtures/events.json --db /tmp/chaintail-demo.sqlite
-cargo run -- query --config fixtures/config.ok.json --db /tmp/chaintail-demo.sqlite --fail
-cargo run -- alert --config fixtures/config.ok.json --db /tmp/chaintail-demo.sqlite --min-amount 2000000
+cargo run -- follow --config fixtures/config.ok.json --fixture fixtures/events.json --db /tmp/ct.sqlite
+# 真上线：Base 公共 RPC + USDC 合约（只读 eth_getLogs）
+cargo run -- follow --config fixtures/config.ok.json --rpc --lookback 50 --db /tmp/ct.sqlite
+cargo run -- query --config fixtures/config.ok.json --db /tmp/ct.sqlite
 ```
 
 ## What we will not do
