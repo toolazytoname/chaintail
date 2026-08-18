@@ -17,6 +17,10 @@ CREATE TABLE IF NOT EXISTS events (
   raw TEXT NOT NULL,
   UNIQUE(chain, tx, log_index)
 );
+CREATE TABLE IF NOT EXISTS cursors (
+  id TEXT PRIMARY KEY,
+  last_block INTEGER NOT NULL
+);
 "#;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -88,6 +92,26 @@ pub fn ingest(conn: &Connection, rows: &[EventRow]) -> Result<usize, StoreError>
     Ok(n)
 }
 
+pub fn cursor(conn: &Connection, id: &str) -> Result<Option<u64>, StoreError> {
+    let mut stmt = conn.prepare("SELECT last_block FROM cursors WHERE id = ?1")?;
+    let mut rows = stmt.query(params![id])?;
+    if let Some(row) = rows.next()? {
+        let n: i64 = row.get(0)?;
+        Ok(Some(n as u64))
+    } else {
+        Ok(None)
+    }
+}
+
+pub fn set_cursor(conn: &Connection, id: &str, last_block: u64) -> Result<(), StoreError> {
+    conn.execute(
+        "INSERT INTO cursors(id, last_block) VALUES (?1, ?2)
+         ON CONFLICT(id) DO UPDATE SET last_block = excluded.last_block",
+        params![id, last_block as i64],
+    )?;
+    Ok(())
+}
+
 pub fn parse_amount(text: &str) -> Result<i64, StoreError> {
     let s = text.trim();
     s.parse::<i64>().map_err(|_| StoreError::Amount(text.to_string()))
@@ -152,5 +176,10 @@ mod tests {
         assert_eq!(fails[0].tx, "0xccc");
         let big = query(&conn, false, Some(2_000_000)).unwrap();
         assert_eq!(big.iter().map(|r| r.tx.as_str()).collect::<Vec<_>>(), ["0xbbb"]);
+        assert_eq!(cursor(&conn, "usdc").unwrap(), None);
+        set_cursor(&conn, "usdc", 99).unwrap();
+        assert_eq!(cursor(&conn, "usdc").unwrap(), Some(99));
+        set_cursor(&conn, "usdc", 100).unwrap();
+        assert_eq!(cursor(&conn, "usdc").unwrap(), Some(100));
     }
 }

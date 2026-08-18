@@ -132,6 +132,7 @@ fn main() -> ExitCode {
                     return ExitCode::from(1);
                 }
             };
+            let mut tip_saved: Option<(String, u64)> = None;
             let events = if rpc || fixture.is_none() {
                 let rpc_url = match cfg.get("rpc_url").and_then(|u| u.as_str()) {
                     Some(u) => u,
@@ -155,14 +156,24 @@ fn main() -> ExitCode {
                         return ExitCode::from(1);
                     }
                 };
-                let from = tip.saturating_sub(lookback);
-                match client.get_logs(address, from, tip) {
+                let cursor_id = format!("{address}");
+                let from = match store::cursor(&conn, &cursor_id) {
+                    Ok(Some(last)) => last.saturating_add(1).min(tip),
+                    Ok(None) => tip.saturating_sub(lookback),
+                    Err(e) => {
+                        eprintln!("{e}");
+                        return ExitCode::from(1);
+                    }
+                };
+                let ev = match client.get_logs(address, from, tip) {
                     Ok(ev) => ev,
                     Err(e) => {
                         eprintln!("{e}");
                         return ExitCode::from(1);
                     }
-                }
+                };
+                tip_saved = Some((address.to_string(), tip));
+                ev
             } else {
                 let path = fixture.unwrap();
                 let file: EventsFile = match serde_json::from_str(&std::fs::read_to_string(&path).unwrap_or_default()) {
@@ -176,7 +187,13 @@ fn main() -> ExitCode {
             };
             match store::ingest(&conn, &events) {
                 Ok(n) => {
-                    println!("{}", serde_json::json!({"ingested": n, "db": db, "rows": events.len()}));
+                    if let Some((ref id, tip)) = tip_saved {
+                        let _ = store::set_cursor(&conn, &id, tip);
+                    }
+                    println!(
+                        "{}",
+                        serde_json::json!({"ingested": n, "db": db, "rows": events.len(), "cursor": tip_saved.as_ref().map(|t| t.1)})
+                    );
                     ExitCode::SUCCESS
                 }
                 Err(e) => {
