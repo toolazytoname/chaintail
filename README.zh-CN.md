@@ -10,7 +10,7 @@
 
 ## 状态
 
-空仓库 + 规格。还没有可运行 CLI。
+**v0.1 可运行。** fixture 日志进 SQLite，可 query / alert。
 
 ## 明确不做
 

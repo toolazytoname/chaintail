@@ -1,0 +1,1 @@
+{"chain": "evm-fixture", "db": "chaintail.sqlite", "notify": {"kind": "file", "path": "alerts.jsonl"}}

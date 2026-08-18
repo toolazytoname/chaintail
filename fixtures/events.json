@@ -1,0 +1,34 @@
+{
+  "events": [
+    {
+      "chain": "evm-fixture",
+      "tx": "0xaaa",
+      "log_index": 0,
+      "block": 100,
+      "address": "0xusdc",
+      "kind": "Transfer",
+      "amount_raw": "1000000",
+      "ok": true
+    },
+    {
+      "chain": "evm-fixture",
+      "tx": "0xbbb",
+      "log_index": 0,
+      "block": 101,
+      "address": "0xusdc",
+      "kind": "Transfer",
+      "amount_raw": "5000000000",
+      "ok": true
+    },
+    {
+      "chain": "evm-fixture",
+      "tx": "0xccc",
+      "log_index": 1,
+      "block": 102,
+      "address": "0xrouter",
+      "kind": "Fail",
+      "amount_raw": "0",
+      "ok": false
+    }
+  ]
+}

@@ -7,3 +7,8 @@ node_modules
 .venv
 .DS_Store
 **/*.rs.bk
+__pycache__/
+*.pyc
+alerts.jsonl
+status.json
+*.sqlite
