@@ -1,5 +1,23 @@
 # 学习模块 · chaintail
 
+![封面](assets/cover.jpg)
+
+[封面动画 6s](assets/cover.mp4)
+
+## 架构
+
+![架构](assets/architecture.svg)
+
+```mermaid
+flowchart LR
+  F[fixture] --> P[parse_logs]
+  R[eth_getLogs] --> P
+  P --> I[SQLite INSERT OR IGNORE]
+  C[cursors last_block] --> R
+  I --> Q[query / alert]
+  I --> C
+```
+
 ```bash
 cd chaintail
 cargo test

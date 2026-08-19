@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="420" viewBox="0 0 960 420" role="img">
+  <rect width="960" height="420" fill="#0f1419"/>
+  <text x="32" y="36" fill="#8aa0b4" font-family="ui-sans-serif,system-ui,sans-serif" font-size="13">chaintail · architecture</text>
+  <g font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" text-anchor="middle">
+    <rect x="40" y="80" width="200" height="64" rx="10" fill="#1a2430" stroke="#5b6b7a"/>
+    <text x="140" y="108" fill="#e8eef4">fixture events.json</text>
+    <text x="140" y="126" fill="#8aa0b4" font-size="11">tests</text>
+    <rect x="40" y="180" width="200" height="64" rx="10" fill="#1a2430" stroke="#3ee0c4"/>
+    <text x="140" y="208" fill="#e8eef4">eth_getLogs</text>
+    <text x="140" y="226" fill="#8aa0b4" font-size="11">rpc.rs · read-only</text>
+    <rect x="300" y="130" width="180" height="70" rx="10" fill="#1a2430" stroke="#e8a54b"/>
+    <text x="390" y="160" fill="#e8eef4">parse_logs</text>
+    <text x="390" y="178" fill="#8aa0b4" font-size="11">topic0 Transfer</text>
+    <rect x="540" y="80" width="180" height="70" rx="10" fill="#1a2430" stroke="#e8a54b"/>
+    <text x="630" y="110" fill="#e8eef4">SQLite events</text>
+    <text x="630" y="128" fill="#8aa0b4" font-size="11">UNIQUE tx+index</text>
+    <rect x="540" y="180" width="180" height="70" rx="10" fill="#1a2430" stroke="#5b6b7a"/>
+    <text x="630" y="210" fill="#e8eef4">cursors</text>
+    <text x="630" y="228" fill="#8aa0b4" font-size="11">last_block</text>
+    <rect x="780" y="80" width="140" height="56" rx="10" fill="#1a2430" stroke="#3ee0c4"/>
+    <text x="850" y="114" fill="#e8eef4">query</text>
+    <rect x="780" y="160" width="140" height="56" rx="10" fill="#1a2430" stroke="#3ee0c4"/>
+    <text x="850" y="194" fill="#e8eef4">alert</text>
+    <path d="M240 112 H270 V165 H300" stroke="#5b6b7a" fill="none"/>
+    <path d="M240 212 H270 V165" stroke="#3ee0c4" fill="none"/>
+    <path d="M480 165 H540" stroke="#e8a54b" fill="none"/>
+    <path d="M720 115 H780" stroke="#3ee0c4" fill="none"/>
+    <path d="M720 215 H750 V188 H780" stroke="#3ee0c4" fill="none"/>
+    <text x="32" y="320" fill="#8aa0b4" font-size="12" text-anchor="start">keccak256("Transfer(address,address,uint256)") is topic0 — a public event id, not a secret.</text>
+    <text x="32" y="344" fill="#8aa0b4" font-size="12" text-anchor="start">First follow uses lookback; later follows start at cursor+1. No eth_sendRawTransaction.</text>
+    <text x="32" y="368" fill="#8aa0b4" font-size="12" text-anchor="start">Amounts stay integer strings decoded from 32-byte hex data.</text>
+  </g>
+</svg>
