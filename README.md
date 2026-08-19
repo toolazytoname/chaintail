@@ -1,6 +1,6 @@
 # chaintail
 
-**English** · [中文](README.zh-CN.md) — plan: [docs/PROJECT-PLAN.md](docs/PROJECT-PLAN.md)
+**English** · [中文](README.zh-CN.md) — plan: [docs/PROJECT-PLAN.md](docs/PROJECT-PLAN.md) · 学习: [learn/](learn/)
 
 Local-first, **read-only** chain event tail.
 
